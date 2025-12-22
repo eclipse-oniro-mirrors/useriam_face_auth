@@ -33,8 +33,6 @@ namespace OHOS {
 namespace UserIam {
 namespace UserAuth {
 namespace {
-constexpr uint32_t FACE_AUTH_CODE_MIN = 1;
-constexpr uint32_t FACE_AUTH_CODE_MAX = 2;
 const std::u16string FACE_AUTH_INTERFACE_TOKEN = u"ohos.faceauth.IFaceAuth";
 
 bool FaceAuthStubFuzzTest(const uint8_t *rawData, size_t size)
@@ -43,23 +41,23 @@ bool FaceAuthStubFuzzTest(const uint8_t *rawData, size_t size)
     if (rawData == nullptr) {
         return false;
     }
-    auto faceAuthservice = FaceAuth::FaceAuthService::GetInstance();
-    for (uint32_t code = FACE_AUTH_CODE_MIN; code < FACE_AUTH_CODE_MAX; code++) {
-        MessageParcel data;
-        MessageParcel reply;
-        MessageOption optionSync = MessageOption::TF_SYNC;
-        MessageOption optionAsync = MessageOption::TF_ASYNC;
-        // Sync
-        data.WriteInterfaceToken(FACE_AUTH_INTERFACE_TOKEN);
-        data.WriteBuffer(rawData, size);
-        data.RewindRead(0);
-        (void)faceAuthservice->OnRemoteRequest(code, data, reply, optionSync);
-        // Async
-        data.WriteInterfaceToken(FACE_AUTH_INTERFACE_TOKEN);
-        data.WriteBuffer(rawData, size);
-        data.RewindRead(0);
-        (void)faceAuthservice->OnRemoteRequest(code, data, reply, optionAsync);
+    Parcel parcel;
+    parcel.WriteBuffer(rawData, size);
+    parcel.RewindRead(0);
+    static uint32_t faceAuthStubCodes[] = {0, 1};
+    uint32_t pos = parcel.ReadUint32() % (sizeof(faceAuthStubCodes) / sizeof(uint32_t));
+    uint32_t code = faceAuthStubCodes[pos];
+    MessageOption option = MessageOption::TF_SYNC;
+    if (parcel.ReadBool()) {
+        option = MessageOption::TF_ASYNC;
     }
+    auto faceAuthservice = FaceAuth::FaceAuthService::GetInstance();
+    MessageParcel data;
+    MessageParcel reply;
+    data.WriteInterfaceToken(FACE_AUTH_INTERFACE_TOKEN);
+    data.WriteBuffer(rawData, size);
+    data.RewindRead(0);
+    (void)faceAuthservice->OnRemoteRequest(code, data, reply, option);
     return true;
 }
 } // namespace
