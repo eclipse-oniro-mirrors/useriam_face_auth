@@ -29,6 +29,12 @@ public:
 
     MOCK_METHOD1(GetExecutorList, int32_t(std::vector<sptr<IAllInOneExecutor>> &executorList));
     MOCK_METHOD1(SetBufferProducer, int32_t(const sptr<BufferProducerSequenceable> &bufferProducer));
+
+    MOCK_METHOD1(SetCameraController, int32_t(const sptr<ICameraControllerCallback>& cameraController));
+    MOCK_METHOD3(GetCameraSettings, int32_t(uint64_t scheduleId, const std::vector<uint8_t>& cameraAbility,
+         std::vector<uint8_t>& cameraSettings));
+    MOCK_METHOD2(SetCameraSecureSeqId, int32_t(uint64_t scheduleId, uint64_t secureSeqId));
+    MOCK_METHOD2(OnCameraError, int32_t(uint64_t scheduleId, int32_t resultCode));
 };
 } // namespace FaceAuth
 } // namespace UserIam
