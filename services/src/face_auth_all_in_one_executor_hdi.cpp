@@ -44,6 +44,7 @@ namespace FaceAuth {
 using IamResultCode = UserAuth::ResultCode;
 using IamExecutorRole = UserAuth::ExecutorRole;
 using IamExecutorInfo = UserAuth::ExecutorInfo;
+using IamCameraStatus = UserAuth::CameraStatus;
 namespace UserAuth = OHOS::UserIam::UserAuth;
 FaceAuthAllInOneExecutorHdi::FaceAuthAllInOneExecutorHdi(sptr<IAllInOneExecutor> executorProxy)
     : executorProxy_(executorProxy) {};
@@ -210,7 +211,7 @@ UserAuth::ResultCode FaceAuthAllInOneExecutorHdi::GetProperty(const std::vector<
         IAM_LOGE("SendCommand fail result %{public}d", result);
         return result;
     }
-    MoveHdiProperty(hdiProperty, property);
+    MoveHdiProperty(hdiProperty, property, keys);
     return IamResultCode::SUCCESS;
 }
 
@@ -257,13 +258,18 @@ IamResultCode FaceAuthAllInOneExecutorHdi::MoveHdiExecutorInfo(ExecutorInfo &in,
     return IamResultCode::SUCCESS;
 }
 
-void FaceAuthAllInOneExecutorHdi::MoveHdiProperty(Property &in, UserAuth::Property &out)
+void FaceAuthAllInOneExecutorHdi::MoveHdiProperty(Property &in, UserAuth::Property &out,
+    const std::vector<UserAuth::Attributes::AttributeKey> &keys)
 {
     out.authSubType = in.authSubType;
     out.lockoutDuration = in.lockoutDuration;
     out.remainAttempts = in.remainAttempts;
     out.enrollmentProgress.swap(in.enrollmentProgress);
     out.sensorInfo.swap(in.sensorInfo);
+    auto iter = std::find(keys.begin(), keys.end(), UserAuth::Attributes::ATTR_CAMERA_STATUS);
+    if (iter != keys.end()) {
+        out.cameraStatus = IamCameraStatus::CAMERA_AVAILABLE;
+    }
 }
 
 IamResultCode FaceAuthAllInOneExecutorHdi::ConvertCommandId(const UserAuth::PropertyMode in, int32_t &out)
@@ -363,6 +369,9 @@ IamResultCode FaceAuthAllInOneExecutorHdi::ConvertAttributeKeyVectorToPropertyTy
 {
     outItems.clear();
     for (auto &inItem : inItems) {
+        if (inItem == UserAuth::Attributes::ATTR_CAMERA_STATUS) {
+            continue;
+        }
         int32_t outItem;
         IamResultCode result = ConvertAttributeKeyToPropertyType(inItem, outItem);
         IF_FALSE_LOGE_AND_RETURN_VAL(result == IamResultCode::SUCCESS, IamResultCode::GENERAL_ERROR);

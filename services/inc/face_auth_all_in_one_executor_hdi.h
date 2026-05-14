@@ -61,7 +61,8 @@ private:
     class SaCommandCallback;
 
     UserAuth::ResultCode MoveHdiExecutorInfo(ExecutorInfo &in, UserAuth::ExecutorInfo &out);
-    void MoveHdiProperty(Property &in, UserAuth::Property &out);
+    void MoveHdiProperty(Property &in, UserAuth::Property &out,
+        const std::vector<UserAuth::Attributes::AttributeKey> &keys);
     UserAuth::ResultCode ConvertCommandId(const UserAuth::PropertyMode in, int32_t &out);
     UserAuth::ResultCode ConvertAuthType(const int32_t in, UserAuth::AuthType &out);
     UserAuth::ResultCode ConvertExecutorRole(const int32_t in, UserAuth::ExecutorRole &out);
