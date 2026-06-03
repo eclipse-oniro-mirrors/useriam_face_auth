@@ -14,7 +14,7 @@
  */
 
 {
-  "modelVersion": "5.0.2",
+  "modelVersion": "6.0.0",
   "name": "settings_faceauth",
   "license": "ISC",
   "version": "1.0.0",
