@@ -40,7 +40,8 @@
           "sensor",
           "user_auth_framework",
           "runtime_core",
-          "selinux_adapter"
+          "selinux_adapter",
+          "taihe_ffi_gen"
         ]
       },
       "build": {
