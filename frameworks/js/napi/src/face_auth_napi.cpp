@@ -134,8 +134,13 @@ napi_value SetSurfaceId(napi_env env, napi_callback_info info)
     buf[maxLen - 1] = '\0';
     std::string strSurfaceId = buf;
     std::istringstream surfaceIdStream(strSurfaceId);
-    uint64_t surfaceId;
+    uint64_t surfaceId = 0;
     surfaceIdStream >> surfaceId;
+    if (surfaceIdStream.fail()) {
+        IAM_LOGE("invalid surfaceId format");
+        napi_throw(env, GenerateBusinessError(env, RESULT_CODE_FAIL));
+        return nullptr;
+    }
 
     sptr<IBufferProducer> bufferProducer(nullptr);
     if (!GetBufferProducerBySurfaceId(surfaceId, bufferProducer)) {
