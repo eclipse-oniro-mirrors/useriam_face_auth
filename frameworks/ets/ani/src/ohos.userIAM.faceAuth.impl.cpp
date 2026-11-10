@@ -71,8 +71,12 @@ int32_t SetSurfaceId(const std::string &surfaceIdStr)
     IAM_LOGI("SetSurfaceId start");
 
     std::istringstream surfaceIdStream(surfaceIdStr);
-    uint64_t surfaceId;
+    uint64_t surfaceId = 0;
     surfaceIdStream >> surfaceId;
+    if (surfaceIdStream.fail()) {
+        IAM_LOGE("invalid surfaceId format");
+        return FACE_AUTH_ERROR;
+    }
 
     sptr<IBufferProducer> bufferProducer(nullptr);
     if (!GetBufferProducerBySurfaceId(surfaceId, bufferProducer)) {

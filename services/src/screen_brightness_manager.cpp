@@ -51,6 +51,7 @@ std::shared_ptr<ScreenBrightnessManager> ScreenBrightnessManager::GetInstance()
 
 std::shared_ptr<IScreenBrightnessTask> ScreenBrightnessManager::GetCurrentTask()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     return taskInProc_;
 }
 
